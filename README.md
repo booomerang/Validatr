@@ -1,5 +1,4 @@
 #Validatr
----
 
 Validatr is a simple Php Validator for your projects.
 
@@ -20,7 +19,6 @@ Validatr is a standalone PHP class, which can be extended for your needs.
  - [Copyright and license](#copyright-and-license)
 
 ## Getting started
----
 
 1. Php >=5.3.0 is required
 2. Install Validatr
@@ -28,7 +26,6 @@ Validatr is a standalone PHP class, which can be extended for your needs.
 4. Enjoy!
 
 ## Installation
----
 
 1) Via composer
 
@@ -39,32 +36,27 @@ Validatr is a standalone PHP class, which can be extended for your needs.
 Unzip it and copy the directory into your PHP project directory.
 
 ## How to use
----
 
 ###//TODO
 
 
 ## Contributing
----
 
 ###//TODO
 
 
 ## Versioning
----
 
 ###//TODO
 
 
 ## Authors
----
 
 Alex Duplii - Boomerang
 
 Email - dusanea@gmail.com
 
 ## Copyright and License
----
 
 Copyright 2014 Boomerang, Inc. under the MIT license.
     
