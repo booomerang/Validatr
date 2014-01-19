@@ -9,8 +9,13 @@ class Validator
     private $specialRulesArray;
     private $defaultMessages = array(
         'required' => 'This field is required',
-        'minLength' => 'Минимально допустимо :value символов',
-        'alpha' => 'Минимально !:value допустимо :value символов'
+        'minLength' => 'Minimally allowable :value characters',
+        'maxLength' => 'Maximum allowable :value characters',
+        'email' => 'Invalid email address - :value',
+        'numeric' => 'Entered value of this field must be numeric',
+        'boolean' => 'Entered value of this field must be booleadn - 1 or 0',
+        'alpha' => 'Allow only letters',
+        'alnum' => 'Allow only letters and digits'
     );
     public $errors = array();
 
@@ -88,6 +93,7 @@ class Validator
     {
         $ruleValue = (int) $ruleValue;
         $fieldValue = mb_strlen($this->currentFieldValue, 'UTF-8');
+        $fieldValue = (int) $fieldValue;
         if ($fieldValue < $ruleValue) {
             return false;
         } else {
@@ -99,6 +105,7 @@ class Validator
     {
         $ruleValue = (int) $ruleValue;
         $fieldValue = mb_strlen($this->currentFieldValue, 'UTF-8');
+        $fieldValue = (int) $fieldValue;
         if ($fieldValue > $ruleValue) {
             return false;
         } else {
