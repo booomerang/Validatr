@@ -3,10 +3,11 @@
 $rules = array(
     'name' => array(
         'required'  => true,
-        'equal'  => 'okOk',
-        //'minLength' => 4,
+        'equal'  => 'okOk', // Custom rule, defined below
+        'minLength' => 4,
         'maxLength' => 8
         /*'email'     => true,
+        'boolean'     => true,
         'numeric'   => true,
         'alpha'   => true,
         'alnum'   => true*/
@@ -16,14 +17,10 @@ $rules = array(
         'minLength' => 4,
         'maxLength' => 20,
         'alpha'     => true
-        /*'email'     => true,
-        'boolean'     => true,
-        'numeric'   => true,
-        'alpha'   => true,
-        'alnum'   => true*/
     )
 );
 
+// Your messages on your language
 $messages = array(
     'name' => array(
         'required' => 'Поле обязательно для заполнения',
@@ -39,10 +36,9 @@ $messages = array(
 );
 
 require_once '../library/Validator.php';
-
 $validator = new Validator();
 
-$validator->addRule('equal', function($ruleValue, $fieldValue) use ($validator){
+$validator->addRule('equal', function($ruleValue, $fieldValue) {
     return ($ruleValue == $fieldValue) ? true : false;
 });
 
