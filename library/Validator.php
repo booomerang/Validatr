@@ -1,5 +1,7 @@
 <?php
 
+namespace Validatr;
+
 class Validator
 {
     private $currentFieldName;
