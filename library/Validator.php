@@ -13,9 +13,9 @@ class Validator
         'required' => 'This field is required',
         'minLength' => 'Minimally allowable :value characters',
         'maxLength' => 'Maximum allowable :value characters',
-        'email' => 'Invalid email address - :value',
+        'email' => 'Invalid email address',
         'numeric' => 'Entered value of this field must be numeric',
-        'boolean' => 'Entered value of this field must be booleadn - 1 or 0',
+        'boolean' => 'Entered value of this field must be boolean - 1 or 0',
         'alpha' => 'Allow only letters',
         'alnum' => 'Allow only letters and digits'
     );
@@ -42,7 +42,7 @@ class Validator
                     $result = $this->specialRulesArray[$ruleKey]($ruleValue, $this->currentFieldValue);
                 } else {
                     $ruleFunction = $ruleKey.'Rule';
-                    $reflectionMethod = new ReflectionMethod(__CLASS__, $ruleFunction);
+                    $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
                     $result = $reflectionMethod->invokeArgs($this, array($ruleValue));
                 }
 

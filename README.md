@@ -51,7 +51,127 @@ Unzip it and copy the directory into your PHP project directory.
 
 ## How to use
 
-###//TODO
+Simple Form
+
+```html
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>FORM</title>
+</head>
+<body>
+
+<form action="post.php" method="post">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name" />
+    <br>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" />
+    <br>
+    <label for="email">Email</label>
+    <input type="text" name="email" id="email" />
+
+    <br>
+    <input type="submit" />
+</form>
+
+</body>
+</html>
+
+```
+
+Form Handler with Validatr class
+
+```php
+
+// Set rules for some fields in form
+$rules = array(
+    'name' => array(
+        'required'  => true,
+        'minLength' => 4,
+        'maxLength' => 8,
+        'alnum'     => true,
+        'equal'     => 'okOk' // Custom rule, defined below
+    ),
+    'password' => array(
+        'required'  => true,
+        'minLength' => 4,
+        'maxLength' => 20,
+        'alpha'     => true,
+        'boolean'   => true,
+        'equal'  => 'Paroli' // We can use our custom rule on all fields
+    ),
+    'email' => array (
+        'required' => true,
+        'email'    => true
+    )
+);
+
+// Your error messages on your language
+$messages = array(
+    'name' => array(
+        'required' => 'Поле обязательно для заполнения',
+        'minLength' => 'Минимально !:value []%#^$&@#~!@#$%^&*( допустимоооооо :value символов',
+        'equal' => 'Not equils for :value',
+        'maxLength' => 'Максимально допустимо :value символов',
+    ),
+    'password' => array(
+        'required' => 'Поле обязательно для заполнения',
+        'maxLength' => 'Максимально допустимо :value символов',
+        'equal' => 'Пароль должен равняться этому значению - :value'
+    )
+);
+
+require_once '../library/Validator.php';
+$validator = new Validatr\Validator();
+
+// Custom rule Function for your needs
+$validator->addRule('equal', function($ruleValue, $fieldValue) {
+    return ($ruleValue == $fieldValue) ? true : false;
+});
+
+$result = $validator->validate($_POST, $rules, $messages);
+
+//var_dump($result);
+
+echo "<pre>";
+print_r($result);
+echo "</pre>";
+```
+
+The result may be (if all fields were sent empty):
+```php
+Array
+(
+    [name] => Array
+        (
+            [required] => Поле обязательно для заполнения
+            [minLength] => Минимально :value []%#^$&@#~!@#$%^&*( допустимоооооо 4 символов
+            [equal] => PHPVALIDATOR!!!
+        )
+
+    [password] => Array
+        (
+            [required] => Поле обязательно для заполнения
+            [minLength] => ок!
+            [alpha] => Allow only letters
+            [boolean] => Entered value of this field must be boolean - 1 or 0
+            [equal] => Пароль должен равняться этому дерьму - Paroli
+        )
+
+    [email] => Array
+        (
+            [required] => This field is required
+            [email] => Invalid email address
+        )
+```
+
+or:
+
+```php
+1
+```
 
 ## Contributing
 
