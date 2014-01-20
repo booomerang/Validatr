@@ -78,7 +78,6 @@ Simple Form
 
 </body>
 </html>
-
 ```
 
 Form Handler with Validatr class
@@ -141,23 +140,24 @@ echo "</pre>";
 ```
 
 The result may be (if all fields were sent empty):
-```php
+```
 Array
 (
     [name] => Array
         (
             [required] => Поле обязательно для заполнения
             [minLength] => Минимально :value []%#^$&@#~!@#$%^&*( допустимоооооо 4 символов
-            [equal] => PHPVALIDATOR!!!
+            [alnum] => Allow only letters and digits
+            [equal] => Not equils for okOk
         )
 
     [password] => Array
         (
             [required] => Поле обязательно для заполнения
-            [minLength] => ок!
+            [minLength] => Minimally allowable 4 characters
             [alpha] => Allow only letters
             [boolean] => Entered value of this field must be boolean - 1 or 0
-            [equal] => Пароль должен равняться этому дерьму - Paroli
+            [equal] => Пароль должен равняться этому значению - Paroli
         )
 
     [email] => Array
@@ -165,6 +165,8 @@ Array
             [required] => This field is required
             [email] => Invalid email address
         )
+
+)
 ```
 
 or:
