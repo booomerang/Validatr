@@ -55,13 +55,6 @@ Simple Form
 
 ```html
 
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>FORM</title>
-</head>
-<body>
-
 <form action="post.php" method="post">
     <label for="name">Name</label>
     <input type="text" name="name" id="name" />
@@ -76,8 +69,6 @@ Simple Form
     <input type="submit" />
 </form>
 
-</body>
-</html>
 ```
 
 Form Handler with Validatr class
@@ -139,6 +130,18 @@ print_r($result);
 echo "</pre>";
 ```
 
+### Return Values
+
+Method `validate()` returns one of two types:
+
+AN ARRAY containing in keys names of form fields and in values nested associative array containing in keys validation rules and in values error messages. (See below exampe).
+
+or
+
+A BOOLEAN value of TRUE if the validation was successful.
+
+**Return values examples:**
+
 The result may be (if all fields were sent empty):
 ```
 Array
@@ -169,10 +172,60 @@ Array
 )
 ```
 
-or:
+Or if all fields was checked successfully:
 
 ```php
 1
+```
+
+### Available rules:
+
+```
+- requred       //Checks if field's value is not empty
+- minLength     //Checks if the number of characters of field's value not less than rule value (UTF-8)
+- maxLength     //Checks if the number of characters of field's value not greater than rule value (UTF-8)
+- email         //Checks if field's value is a valid email adress
+- numeric       //Checks if field contains only numeric value
+- boolean       //Checks if field's value is boolean
+- alpha         //Checks if field's value contains only alphabetic characters (UTF-8)
+- alnum         //Checks if field's value contains only alphabetic and numeric characters (UTF-8)
+```
+
+### Creating your own validating rules
+
+```php
+$data = array (
+    'name' => 'ok'
+);
+
+$rules = array(
+    'name' => array(
+        'between' => '5,10' // Custom rule, defined below
+    )
+);
+
+$messages = array(
+    'name' => array(
+        'between' => 'The length of the value must be between :value'
+    )
+);
+
+// Custom rule Callback Function for your needs
+First arg - your value from $rules array - '5,10'
+Second arg - field's value, which comes as first arg in validate() method - 'ok'
+
+$validator->addRule('between', function($ruleValue, $fieldValue) {
+
+    $arr = explode(',', $ruleValue);
+    $lenghtFieldValue = mb_strlen($fieldValue, 'UTF-8');
+
+    if (($lenghtFieldValue > $arr[0]) && ($lenghtFieldValue < $arr[1])) {
+        return true;
+    }
+    return false;
+});
+
+$result = $validator->validate($data, $rules, $messages);
 ```
 
 ## Contributing

@@ -29,7 +29,7 @@ $messages = array(
         'required' => 'Поле обязательно для заполнения',
         'minLength' => 'Минимально !:value []%#^$&@#~!@#$%^&*( допустимоооооо :value символов',
         'equal' => 'Not equils for :value',
-        'maxLength' => 'Максимально допустимо :value символов',
+        'maxLength' => 'Максимально допустимо :value символов'
     ),
     'password' => array(
         'required' => 'Поле обязательно для заполнения',
