@@ -54,7 +54,6 @@ Unzip it and copy the directory into your PHP project directory.
 Simple Form
 
 ```html
-
 <form action="post.php" method="post">
     <label for="name">Name</label>
     <input type="text" name="name" id="name" />
@@ -68,13 +67,11 @@ Simple Form
     <br>
     <input type="submit" />
 </form>
-
 ```
 
 Form Handler with Validatr class
 
 ```php
-
 // Set rules for some fields in form
 $rules = array(
     'name' => array(
@@ -211,8 +208,9 @@ $messages = array(
 );
 
 // Custom rule Callback Function for your needs
-First arg - your value from $rules array - '5,10'
-Second arg - field's value, which comes as first arg in validate() method - 'ok'
+
+//First arg - your value from $rules array - '5,10'
+//Second arg - field's value, which comes as first arg in validate() method - 'ok'
 
 $validator->addRule('between', function($ruleValue, $fieldValue) {
 
@@ -257,6 +255,14 @@ Brazenly copied from [Bootstrap's README.md](https://github.com/twbs/bootstrap#v
 Alex Duplii - Boomerang
 
 Email - dusanea@gmail.com
+
+-----
+
+Inspired by:
+
+- http://jqueryvalidation.org/
+- https://github.com/selahattinunlu/phpValidator
+- https://github.com/Wixel/GUMP
 
 ## Copyright and License
 
