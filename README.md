@@ -1,10 +1,10 @@
 #Validatr
 
-Validatr is a simple Php Validator for your projects.
+Validatr is a simple and multilingual Php Validator library for validationing user's data.
 
   - Simple form for rules and errors messages
   - Flexible and extendable with your callbacks rules functions
-  - Enjoyment
+  - Enjoyment!
 
 Validatr is a standalone PHP class, which can be extended for your needs.
 
@@ -35,6 +35,12 @@ Validatr is a standalone PHP class, which can be extended for your needs.
         "boomerang/validatr": "dev-master"
     }
 }
+```
+
+To download the library run the command:
+
+```
+$ php composer.phar update boomerang/validatr
 ```
 
 2) Git clone
@@ -126,6 +132,13 @@ echo "<pre>";
 print_r($result);
 echo "</pre>";
 ```
+
+### Set messages
+You can set the error's messages on your language, which will be shown for non-valid data.
+
+    Notice!
+        You can use ":value" placeholder for rule's value in your message.
+        If you need text ":value" in your message, use !:value to cancel (to escape) special purpose of this placeholder (see return messages).
 
 ### Return Values
 
