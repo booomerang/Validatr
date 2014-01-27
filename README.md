@@ -1,6 +1,6 @@
 #Validatr
 
-Validatr is a simple and multilingual Php Validator library for validationing user's data.
+Validatr is a simple multilingual Php Validator library for checking user's data.
 
   - Simple form for rules and errors messages
   - Flexible and extendable with your callbacks rules functions
