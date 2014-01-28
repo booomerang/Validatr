@@ -115,13 +115,22 @@ echo "</pre>";*/
 
 
 
+/*
 
+Array
+(
+    [name] => dadada
+    [password] => paroli
+    [email] => ok@gmail.com
+)
+
+ */
 
 
 
 
 $rules = array (
-    'name' => 'required|min:4|max:5|alnum|equal:Petea',
+    'name' => 'required|min:4|max:15|alnum|equal:Petea',
     'password' => 'required|minLenght:3',
     'email' => 'required|email',
 );
