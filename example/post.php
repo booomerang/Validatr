@@ -130,20 +130,20 @@ Array
 
 
 $rules = array (
-    'name' => 'required|min:4|max:15|alnum|equal:Petea',
-    'password' => 'required|minLenght:3',
+    'name' => 'required|min:3|max:15|alnum|equal:Petea',
+    'password' => 'required|min:3',
     'email' => 'required|email',
 );
 
 // Your error messages on your language
-$messages = array(
-    'name' => array(
+$messages = array (
+    'name' => array (
         'required' => 'Поле обязательно для заполнения',
         'minLength' => 'Минимально !:value []%#^$&@#~!@#$%^&*( допустимоооооо :value символов',
         'maxLength' => 'Максимально допустимо :value символов',
         'equal' => 'Not equils for :value'
     ),
-    'password' => array(
+    'password' => array (
         'required' => 'Поле обязательно для заполнения',
         'maxLength' => 'Максимально допустимо :value символов',
         'equal' => 'Пароль должен равняться этому значению - :value'

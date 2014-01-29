@@ -49,18 +49,40 @@ class Validator
                 continue;
             }
 
+            $dataValue = $data[$ruleKey];
+
             $rulesListForField = trim($rulesListForField);
             $rulesArray = explode('|', $rulesListForField);
             pre($rulesArray);
-            pred($data);
-            foreach($data as $key => $value)
-            {
+            pre($data);
 
+            foreach($rulesArray as $rule)
+            {
+                $ruleParts = explode(':', $rule);
+                $ruleFunction = $ruleParts[0].'Rule';
+
+                if (!isset($ruleParts[1])) {
+                    $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
+                    $result = $reflectionMethod->invokeArgs($this, array($dataValue));
+                } else {
+                    $ruleFunctionParams = $ruleParts[1];
+
+                    $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
+                    $result = $reflectionMethod->invokeArgs($this, array($dataValue, $ruleFunctionParams));
+                }
+                pre($ruleFunction);
+                pre($ruleFunctionParams);
+
+                if($result) {
+                    pre(1);
+                } else {
+                    pre(0);
+                }
             }
         }
     }
 
-    public function requredRule($dataValue)
+    public function requiredRule($dataValue)
     {
         if ($dataValue == '') {
             return false;
@@ -70,7 +92,7 @@ class Validator
         }
     }
 
-    public function minRule($ruleValue, $dataValue)
+    public function minRule($dataValue, $ruleValue)
     {
         $ruleValueLen = (int) $ruleValue;
         $dataValue = mb_strlen($dataValue, 'UTF-8');
@@ -82,7 +104,7 @@ class Validator
         }
     }
 
-    public function maxRule($ruleValue, $dataValue)
+    public function maxRule($dataValue, $ruleValue)
     {
         $ruleValueLen = (int) $ruleValue;
         $dataValue = mb_strlen($dataValue, 'UTF-8');
@@ -147,7 +169,7 @@ class Validator
      * @param $dataValue
      * @return bool
      */
-    public function alnumRuleWith($ruleValue, $dataValue)
+    public function alnumRuleWith($dataValue, $ruleValue)
     {
         preg_match('/^[[:alnum:]'.$ruleValue.']+$/iu', $dataValue, $result);
         if (!empty($result)) {
@@ -157,7 +179,7 @@ class Validator
         }
     }
 
-    public function inRule($ruleValue, $dataValue)
+    public function inRule($dataValue, $ruleValue)
     {
         $valuesArray = explode(',', $ruleValue);
         if (array_key_exists($dataValue, $valuesArray)) {
@@ -167,7 +189,7 @@ class Validator
         }
     }
 
-    public function notInRule($ruleValue, $dataValue)
+    public function notInRule($dataValue, $ruleValue)
     {
         $valuesArray = explode(',', $ruleValue);
         if (!array_key_exists($dataValue, $valuesArray)) {
@@ -177,7 +199,7 @@ class Validator
         }
     }
 
-    public function equalRule($ruleValue, $dataValue)
+    public function equalRule($dataValue, $ruleValue)
     {
         if ($ruleValue == $dataValue) {
             return true;
@@ -186,7 +208,7 @@ class Validator
         }
     }
 
-    public function notEqualRule($ruleValue, $dataValue)
+    public function notEqualRule($dataValue, $ruleValue)
     {
         if ($ruleValue != $dataValue) {
             return true;
