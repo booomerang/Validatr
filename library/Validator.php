@@ -22,15 +22,14 @@ class Validator
 
     // TODO: Сделать фичу, для более жесткого сравнения значений с правилами, там где возможно.
 
-    private $currentFieldName;
-    private $currentFieldValue;
-    private $messages;
+    private $_messages;
     private $rulesArray;
     private $specialRulesArray;
+    public $messages = array();
     private $defaultMessages = array(
         'required' => 'This field is required',
-        'minLength' => 'Minimally allowable :value characters',
-        'maxLength' => 'Maximum allowable :value characters',
+        'min' => 'Minimally allowable :value characters',
+        'max' => 'Maximum allowable :value characters',
         'email' => 'Invalid email address',
         'numeric' => 'Entered value of this field must be numeric',
         'boolean' => 'Entered value of this field must be boolean - 1 or 0',
@@ -41,7 +40,7 @@ class Validator
 
     public function validate(array $data, array $rules, $messages = array())
     {
-        $this->messages = $messages;
+        $this->_messages = $messages;
 
         foreach($rules as $ruleKey => $rulesListForField)
         {
@@ -50,15 +49,18 @@ class Validator
             }
 
             $dataValue = $data[$ruleKey];
+            $dataKey = $ruleKey;
+
+            //pre($dataKey);
 
             $rulesListForField = trim($rulesListForField);
             $rulesArray = explode('|', $rulesListForField);
-            pre($rulesArray);
-            pre($data);
+            //pre($rulesArray);
 
             foreach($rulesArray as $rule)
             {
                 $ruleParts = explode(':', $rule);
+                $ruleName = $ruleParts[0];
                 $ruleFunction = $ruleParts[0].'Rule';
 
                 if (!isset($ruleParts[1])) {
@@ -70,14 +72,28 @@ class Validator
                     $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
                     $result = $reflectionMethod->invokeArgs($this, array($dataValue, $ruleFunctionParams));
                 }
-                pre($ruleFunction);
-                pre($ruleFunctionParams);
+                /*pre($ruleFunction);
+                pre($ruleFunctionParams);*/
 
-                if($result) {
+                /*if ($result) {
                     pre(1);
                 } else {
                     pre(0);
-                }
+                }*/
+
+                $this->checkError($result, $dataKey, $ruleName);
+            }
+        }
+        return !empty($this->messages) ? $this->messages : true;
+    }
+
+    private function checkError($result, $dataKey, $ruleName)
+    {
+        if (!$result) {
+            if (isset($this->_messages[$dataKey][$ruleName])) {
+                $this->messages[$dataKey][$ruleName] = $this->_messages[$dataKey][$ruleName];
+            } else {
+                $this->messages[$dataKey][$ruleName] = $this->defaultMessages[$ruleName];
             }
         }
     }
