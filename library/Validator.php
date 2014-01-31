@@ -32,9 +32,14 @@ class Validator
         'max' => 'Maximum allowable :value characters',
         'email' => 'Invalid email address',
         'numeric' => 'Entered value of this field must be numeric',
-        'boolean' => 'Entered value of this field must be boolean - 1 or 0',
+        'bool' => 'Entered value of this field must be boolean - 1 or 0',
         'alpha' => 'Allow only letters',
-        'alnum' => 'Allow only letters and digits'
+        'alnum' => 'Allow only letters and digits',
+        'alnumWith' => 'Allow only letters and digits',
+        'in' => 'Entered value must be in this list of words',
+        'notIn' => 'Entered value must not be in this list of words',
+        'equal' => 'Entered value must be equal :value',
+        'notEqual' => 'Entered value must not be equal :value'
     );
     public $errors = array();
 
@@ -61,7 +66,7 @@ class Validator
             {
                 $ruleParts = explode(':', $rule);
                 $ruleName = $ruleParts[0];
-                $ruleFunction = $ruleParts[0].'Rule';
+                $ruleFunction = 'is'.$ruleParts[0];
 
                 if (!isset($ruleParts[1])) {
                     $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
@@ -98,7 +103,7 @@ class Validator
         }
     }
 
-    public function requiredRule($dataValue)
+    public function isRequired($dataValue)
     {
         if ($dataValue == '') {
             return false;
@@ -108,7 +113,7 @@ class Validator
         }
     }
 
-    public function minRule($dataValue, $ruleValue)
+    public function isMin($dataValue, $ruleValue)
     {
         $ruleValueLen = (int) $ruleValue;
         $dataValue = mb_strlen($dataValue, 'UTF-8');
@@ -120,7 +125,7 @@ class Validator
         }
     }
 
-    public function maxRule($dataValue, $ruleValue)
+    public function isMax($dataValue, $ruleValue)
     {
         $ruleValueLen = (int) $ruleValue;
         $dataValue = mb_strlen($dataValue, 'UTF-8');
@@ -132,7 +137,7 @@ class Validator
         }
     }
 
-    public function emailRule($dataValue)
+    public function isEmail($dataValue)
     {
         if (filter_var($dataValue, FILTER_VALIDATE_EMAIL)) {
             return true;
@@ -141,7 +146,7 @@ class Validator
         }
     }
 
-    public function numericRule($dataValue)
+    public function isNumeric($dataValue)
     {
         if (is_numeric($dataValue)) {
             return true;
@@ -150,16 +155,16 @@ class Validator
         }
     }
 
-    public function boolRule($dataValue)
+    public function isBool($dataValue)
     {
-        if (is_bool($dataValue)) {
+        if ($dataValue == '0' || $dataValue == '1') {
             return true;
         } else {
             return false;
         }
     }
 
-    public function alphaRule($dataValue)
+    public function isAlpha($dataValue)
     {
         preg_match('/^[[:alpha:]]+$/iu', $dataValue, $result);
         if (!empty($result)) {
@@ -169,7 +174,7 @@ class Validator
         }
     }
 
-    public function alnumRule($dataValue)
+    public function isAlnum($dataValue)
     {
         preg_match('/^[[:alnum:]]+$/iu', $dataValue, $result);
         if (!empty($result)) {
@@ -181,11 +186,11 @@ class Validator
 
     /**
      * Checks if value contains alpha, numeric and some else characters
-     * @param $ruleValue
-     * @param $dataValue
+     * @param string $ruleValue
+     * @param string $dataValue
      * @return bool
      */
-    public function alnumRuleWith($dataValue, $ruleValue)
+    public function isAlnumWith($dataValue, $ruleValue)
     {
         preg_match('/^[[:alnum:]'.$ruleValue.']+$/iu', $dataValue, $result);
         if (!empty($result)) {
@@ -195,27 +200,36 @@ class Validator
         }
     }
 
-    public function inRule($dataValue, $ruleValue)
+    /** Checks if value is included in the given list of values.
+     * @param string $dataValue Field value
+     * @param string $ruleValue List of values with comma as delimiter
+     * @return bool
+     */
+    public function isIn($dataValue, $ruleValue)
     {
         $valuesArray = explode(',', $ruleValue);
-        if (array_key_exists($dataValue, $valuesArray)) {
-            return true;
-        } else {
-            return false;
+        foreach($valuesArray as $value)
+        {
+            if ($value == $dataValue) {
+                return true;
+            }
         }
+        return false;
     }
 
-    public function notInRule($dataValue, $ruleValue)
+    public function isNotIn($dataValue, $ruleValue)
     {
         $valuesArray = explode(',', $ruleValue);
-        if (!array_key_exists($dataValue, $valuesArray)) {
-            return true;
-        } else {
-            return false;
+        foreach($valuesArray as $value)
+        {
+            if ($value == $dataValue) {
+                return false;
+            }
         }
+        return true;
     }
 
-    public function equalRule($dataValue, $ruleValue)
+    public function isEqual($dataValue, $ruleValue)
     {
         if ($ruleValue == $dataValue) {
             return true;
@@ -224,7 +238,7 @@ class Validator
         }
     }
 
-    public function notEqualRule($dataValue, $ruleValue)
+    public function isNotEqual($dataValue, $ruleValue)
     {
         if ($ruleValue != $dataValue) {
             return true;

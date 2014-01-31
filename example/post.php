@@ -130,7 +130,7 @@ Array
 
 
 $rules = array (
-    'name' => 'required|min:3|max:15|alnum|equal:Petea',
+    'name' => 'required|min:3|max:15|bool',
     'password' => 'required|min:3',
     'email' => 'required|email',
 );
