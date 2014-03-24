@@ -7,15 +7,17 @@
 
 <form action="post.php" method="post">
     <label for="name">Name</label>
-    <input type="text" name="name" id="name" />
-    <br>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" />
-    <br>
-    <label for="email">Email</label>
-    <input type="text" name="email" id="email" />
+    <input type="text" name="name" id="name" /><br/>
 
-    <br>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" /><br/>
+
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" /><br/>
+
+    <label for="checkbox">Checkbox</label>
+    <input type="checkbox" name="checkbox" id="checkbox" /><br/>
+
     <input type="submit" />
 </form>
 
