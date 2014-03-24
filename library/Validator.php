@@ -47,6 +47,8 @@ class Validator
     {
         $this->_messages = $messages;
 
+        //pre($rules);
+
         foreach($rules as $ruleKey => $rulesListForField)
         {
             if (!array_key_exists($ruleKey, $data)) {
@@ -67,6 +69,7 @@ class Validator
                 $ruleParts = explode(':', $rule);
                 $ruleName = $ruleParts[0];
                 $ruleFunction = 'is'.$ruleParts[0];
+                //pred($ruleParts);
 
                 if (!isset($ruleParts[1])) {
                     $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
@@ -115,10 +118,8 @@ class Validator
 
     public function isMin($dataValue, $ruleValue)
     {
-        $ruleValueLen = (int) $ruleValue;
         $dataValue = mb_strlen($dataValue, 'UTF-8');
-        $dataValueLen = (int) $dataValue;
-        if ($dataValueLen < $ruleValueLen) {
+        if ((int) $dataValue < (int) $ruleValue) {
             return false;
         } else {
             return true;
@@ -127,10 +128,8 @@ class Validator
 
     public function isMax($dataValue, $ruleValue)
     {
-        $ruleValueLen = (int) $ruleValue;
         $dataValue = mb_strlen($dataValue, 'UTF-8');
-        $dataValueLen = (int) $dataValue;
-        if ($dataValueLen > $ruleValueLen) {
+        if ((int) $dataValue > (int) $ruleValue) {
             return false;
         } else {
             return true;
@@ -139,29 +138,17 @@ class Validator
 
     public function isEmail($dataValue)
     {
-        if (filter_var($dataValue, FILTER_VALIDATE_EMAIL)) {
-            return true;
-        } else {
-            return false;
-        }
+        return filter_var($dataValue, FILTER_VALIDATE_EMAIL);
     }
 
     public function isNumeric($dataValue)
     {
-        if (is_numeric($dataValue)) {
-            return true;
-        } else {
-            return false;
-        }
+        return is_numeric($dataValue);
     }
 
     public function isBool($dataValue)
     {
-        if ($dataValue == '0' || $dataValue == '1') {
-            return true;
-        } else {
-            return false;
-        }
+        return filter_var($dataValue, FILTER_VALIDATE_BOOLEAN);
     }
 
     public function isAlpha($dataValue)
@@ -186,13 +173,13 @@ class Validator
 
     /**
      * Checks if value contains alpha, numeric and some else characters
-     * @param string $ruleValue
      * @param string $dataValue
+     * @param string $ruleValue
      * @return bool
      */
     public function isAlnumWith($dataValue, $ruleValue)
     {
-        preg_match('/^[[:alnum:]'.$ruleValue.']+$/iu', $dataValue, $result);
+        preg_match('/^[[:alnum:]'.preg_quote($ruleValue, '/').']+$/iu', $dataValue, $result);
         if (!empty($result)) {
             return true;
         } else {
@@ -205,42 +192,68 @@ class Validator
      * @param string $ruleValue List of values with comma as delimiter
      * @return bool
      */
-    public function isIn($dataValue, $ruleValue)
+    public function isIn($dataValue, $ruleValue, $strict = false)
     {
         $valuesArray = explode(',', $ruleValue);
-        foreach($valuesArray as $value)
-        {
-            if ($value == $dataValue) {
-                return true;
+        $valuesArray = array_map('trim', $valuesArray);
+
+        if ($strict == false) {
+            foreach($valuesArray as $value)
+            {
+                $dataValue = mb_strtolower($dataValue, 'UTF-8');
+                $value = mb_strtolower($value, 'UTF-8');
+
+                if ($value == $dataValue) {
+                    return true;
+                }
             }
+        } else {
+            return in_array($dataValue, $valuesArray);
         }
         return false;
     }
 
-    public function isNotIn($dataValue, $ruleValue)
+    public function isNotIn($dataValue, $ruleValue, $strict = false)
     {
         $valuesArray = explode(',', $ruleValue);
-        foreach($valuesArray as $value)
-        {
-            if ($value == $dataValue) {
-                return false;
+        $valuesArray = array_map('trim', $valuesArray);
+
+        if ($strict == false) {
+            foreach($valuesArray as $value)
+            {
+                $dataValue = mb_strtolower($dataValue, 'UTF-8');
+                $value = mb_strtolower($value, 'UTF-8');
+
+                if ($value == $dataValue) {
+                    return false;
+                }
             }
+        } else {
+            return !in_array($dataValue, $valuesArray);
         }
         return true;
     }
 
-    public function isEqual($dataValue, $ruleValue)
+    public function isEqual($dataValue, $ruleValue, $strict = false)
     {
-        if ($ruleValue == $dataValue) {
+        if ($strict == false) {
+            $dataValue = mb_strtolower($dataValue, 'UTF-8');
+            $ruleValue = mb_strtolower($ruleValue, 'UTF-8');
+        }
+        if ($dataValue == $ruleValue) {
             return true;
         } else {
             return false;
         }
     }
 
-    public function isNotEqual($dataValue, $ruleValue)
+    public function isNotEqual($dataValue, $ruleValue, $strict = false)
     {
-        if ($ruleValue != $dataValue) {
+        if ($strict == false) {
+            $dataValue = mb_strtolower($dataValue, 'UTF-8');
+            $ruleValue = mb_strtolower($ruleValue, 'UTF-8');
+        }
+        if ($dataValue != $ruleValue) {
             return true;
         } else {
             return false;

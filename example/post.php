@@ -1,25 +1,12 @@
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+</body>
+</html>
 <?php
 /*
-$rules =
-'
-required
-min
-max
-email
-bool
-numeric
-alpha
-alnum
-alnumWith
-in
-notIn
-equal
-notEqual
-confirm?
-exists?(DB)
-unique?(DB)
-';
-
 
 $rules = array (
     'name' => 'required|minLenght:4|maxLenght:5|alnum|equal:Petea',
@@ -55,44 +42,6 @@ $messages = array(
     )
 );
 
-// Set rules for some fields in form
-$rules = array(
-    'name' => array(
-        'required'  => true,
-        'minLength' => 4,
-        'maxLength' => 8,
-        'alnum'     => true,
-        'equal'     => 'okOk' // Custom rule, defined below
-    ),
-    'password' => array(
-        'required'  => true,
-        'minLength' => 4,
-        'maxLength' => 20,
-        'alpha'     => true,
-        'boolean'   => true,
-        'equal'  => 'Paroli' // We can use our custom rule on all fields
-    ),
-    'email' => array (
-        'required' => true,
-        'email'    => true
-    )
-);
-
-// Your error messages on your language
-$messages = array(
-    'name' => array(
-        'required' => 'Поле обязательно для заполнения',
-        'minLength' => 'Минимально !:value []%#^$&@#~!@#$%^&*( допустимоооооо :value символов',
-        'maxLength' => 'Максимально допустимо :value символов',
-        'equal' => 'Not equils for :value'
-    ),
-    'password' => array(
-        'required' => 'Поле обязательно для заполнения',
-        'maxLength' => 'Максимально допустимо :value символов',
-        'equal' => 'Пароль должен равняться этому значению - :value'
-    )
-);
-
 require_once '../library/Validator.php';
 $validator = new Validatr\Validator();
 
@@ -110,9 +59,33 @@ print_r($result);
 echo "</pre>";*/
 
 
+/*
+*required
+*min
+*max
+*email
+?bool
+*numeric
+*alpha
+*alnum
+?alnumWith - Special chars and ':' ?
+?in - ':'?
+?notIn - ':'?
+?equal[s] - ':'?
+?notEqual[s] - ':'?
+confirm?
+regexp?
+exists?(DB)
+unique?(DB)
 
 
 
+$rules = array (
+    'name' => 'required|min:4|max:15|email|bool|numeric',
+    'password' => 'alpha|alnum|alnumWith:-+_|in:1,2,3|notIn:4,5|equal:Petea|notEqual:Vasea',
+    'email' => 'required|email',
+);
+*/
 
 
 /*
@@ -126,35 +99,58 @@ Array
 
  */
 
+//var_dump($_POST);
+//die;
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 
 $rules = array (
     'name' => 'required|min:3|max:15|bool',
     'password' => 'required|min:3',
     'email' => 'required|email',
+    'checkbox' => 'bool'
 );
 
 // Your error messages on your language
 $messages = array (
     'name' => array (
         'required' => 'Поле обязательно для заполнения',
-        'minLength' => 'Минимально !:value []%#^$&@#~!@#$%^&*( допустимоооооо :value символов',
-        'maxLength' => 'Максимально допустимо :value символов',
-        'equal' => 'Not equils for :value'
+        'min' => 'Минимально допустимо :value символов',
+        'max' => 'Максимально допустимо :value символов'
     ),
     'password' => array (
         'required' => 'Поле обязательно для заполнения',
-        'maxLength' => 'Максимально допустимо :value символов',
-        'equal' => 'Пароль должен равняться этому значению - :value'
+        'min' => 'Максимально допустимо :value символов'
     )
 );
 
 require_once '../library/Validator.php';
 $validator = new Validatr\Validator();
 
-$result = $validator->validate($_POST, $rules, $messages);
+//$result = $validator->validate($_POST, $rules, $messages);
 
+$boolCheckRes = $validator->isIn('окидоки', 'ok, 1 , окидоки');
+/*$boolCheckRes2 = $validator->isBool('11');
+$boolCheckRes3 = $validator->isAlnumWith('авава1/', "/");
+$boolCheckRes4 = $validator->isIn('ok', 'Ok,2,3');*/
+
+var_dump($boolCheckRes);
+/*var_dump($boolCheckRes2);
+var_dump($boolCheckRes3);
+var_dump($boolCheckRes4);*/
+echo '=======';
+echo '<br>';
+die;
+
+/*$ok = 1;
+$ok++;
+$ok += 10;
+
+echo "AAAAA";
+echo $ok;
+echo "CCCCC";*/
 echo "<pre>";
 print_r($result);
 echo "</pre>";
