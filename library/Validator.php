@@ -2,21 +2,6 @@
 
 namespace Validatr;
 
-function pred($data)
-{
-    echo "<pre>";
-    print_r($data);
-    echo "</pre>";
-    die;
-}
-
-function pre($data)
-{
-    echo "<pre>";
-    print_r($data);
-    echo "</pre>";
-}
-
 class Validator
 {
     private $_messages;

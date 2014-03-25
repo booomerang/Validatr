@@ -20,7 +20,7 @@ Validatr is a standalone PHP class, which can be extended for your needs.
 
 ## Getting started
 
-1. Php >=5.3.0 is required
+1. Php >= 5.3.0 is required
 2. Install Validatr convenient for you
 3. Check your data with Validatrs rules
 4. Enjoy!
