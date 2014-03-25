@@ -19,9 +19,6 @@ function pre($data)
 
 class Validator
 {
-
-    // TODO: Сделать фичу, для более жесткого сравнения значений с правилами, там где возможно.
-
     private $_messages;
     private $rulesArray;
     private $specialRulesArray;
@@ -47,29 +44,23 @@ class Validator
     {
         $this->_messages = $messages;
 
-        //pre($rules);
-
         foreach($rules as $ruleKey => $rulesListForField)
         {
             if (!array_key_exists($ruleKey, $data)) {
                 continue;
             }
 
-            $dataValue = $data[$ruleKey];
-            $dataKey = $ruleKey;
-
-            //pre($dataKey);
+            $dataKey = $ruleKey; // Field's Name
+            $dataValue = $data[$ruleKey]; // Field's Value
 
             $rulesListForField = trim($rulesListForField);
             $rulesArray = explode('|', $rulesListForField);
-            //pre($rulesArray);
 
             foreach($rulesArray as $rule)
             {
                 $ruleParts = explode(':', $rule);
                 $ruleName = $ruleParts[0];
-                $ruleFunction = 'is'.$ruleParts[0];
-                //pred($ruleParts);
+                $ruleFunction = 'is'.$ruleName;
 
                 if (!isset($ruleParts[1])) {
                     $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
@@ -77,17 +68,17 @@ class Validator
                 } else {
                     $ruleFunctionParams = $ruleParts[1];
 
-                    $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
-                    $result = $reflectionMethod->invokeArgs($this, array($dataValue, $ruleFunctionParams));
-                }
-                /*pre($ruleFunction);
-                pre($ruleFunctionParams);*/
+                    // for strict mode comparison
+                    if (isset($ruleParts[2]) && (strtolower($ruleParts[2]) == '[strict]' || strtolower($ruleParts[2]) == '[s]')) {
+                        $strict = true;
 
-                /*if ($result) {
-                    pre(1);
-                } else {
-                    pre(0);
-                }*/
+                        $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
+                        $result = $reflectionMethod->invokeArgs($this, array($dataValue, $ruleFunctionParams, $strict));
+                    } else {
+                        $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
+                        $result = $reflectionMethod->invokeArgs($this, array($dataValue, $ruleFunctionParams));
+                    }
+                }
 
                 $this->checkError($result, $dataKey, $ruleName);
             }
@@ -95,6 +86,12 @@ class Validator
         return !empty($this->messages) ? $this->messages : true;
     }
 
+    /**
+     * Method for setting messages in array
+     * @param bool $result Result of rule function
+     * @param string $dataKey Name of field
+     * @param string $ruleName Name of rule function
+     */
     private function checkError($result, $dataKey, $ruleName)
     {
         if (!$result) {
@@ -146,6 +143,11 @@ class Validator
         return is_numeric($dataValue);
     }
 
+    /**
+     * Method returns TRUE for values "1", "true", "on" and "yes". Otherwise returns FALSE.
+     * @param mixed $dataValue Value for validating
+     * @return bool
+     */
     public function isBool($dataValue)
     {
         return filter_var($dataValue, FILTER_VALIDATE_BOOLEAN);
@@ -187,9 +189,11 @@ class Validator
         }
     }
 
-    /** Checks if value is included in the given list of values.
-     * @param string $dataValue Field value
-     * @param string $ruleValue List of values with comma as delimiter
+    /**
+     * Checks if value is included in the given list of values.
+     * @param mixed $dataValue Field value
+     * @param mixed $ruleValue List of values with comma as delimiter
+     * @param bool $strict Mode for strict comparison
      * @return bool
      */
     public function isIn($dataValue, $ruleValue, $strict = false)
@@ -213,6 +217,13 @@ class Validator
         return false;
     }
 
+    /**
+     * Checks if value is not included in the given list of values.
+     * @param mixed $dataValue Field value
+     * @param mixed $ruleValue List of values with comma as delimiter
+     * @param bool $strict Mode for strict comparison
+     * @return bool
+     */
     public function isNotIn($dataValue, $ruleValue, $strict = false)
     {
         $valuesArray = explode(',', $ruleValue);
