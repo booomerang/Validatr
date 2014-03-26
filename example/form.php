@@ -16,7 +16,8 @@
     <input type="email" name="email" id="email" /><br/>
 
     <label for="checkbox">Checkbox</label>
-    <input type="checkbox" name="checkbox" id="checkbox" /><br/>
+    <input type="hidden" name="checkbox" value="0" />
+    <input type="checkbox" name="checkbox" id="checkbox" value="1" /><br/>
 
     <input type="submit" />
 </form>

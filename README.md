@@ -1,4 +1,4 @@
-#Validatr
+#Validatr 2.0
 
 Validatr is a simple multilingual Php Validator library for checking user's data.
 
@@ -7,6 +7,11 @@ Validatr is a simple multilingual Php Validator library for checking user's data
   - Enjoyment!
 
 Validatr is a standalone PHP class, which can be extended for your needs.
+
+What's new in 2.0 version?
+- More rules
+- More compact creating rules
+- More powerful and flexible
 
 ## Table of contents
 
@@ -62,15 +67,18 @@ Simple Form
 ```html
 <form action="post.php" method="post">
     <label for="name">Name</label>
-    <input type="text" name="name" id="name" />
-    <br>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" />
-    <br>
-    <label for="email">Email</label>
-    <input type="text" name="email" id="email" />
+    <input type="text" name="name" id="name" /><br/>
 
-    <br>
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" /><br/>
+
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" /><br/>
+
+    <label for="checkbox">Checkbox</label>
+    <input type="hidden" name="checkbox" value="0" />
+    <input type="checkbox" name="checkbox" id="checkbox" value="1" /><br/>
+
     <input type="submit" />
 </form>
 ```
@@ -79,54 +87,34 @@ Form Handler with Validatr class
 
 ```php
 // Set rules for some fields in form
-$rules = array(
-    'name' => array(
-        'required'  => true,
-        'minLength' => 4,
-        'maxLength' => 8,
-        'alnum'     => true,
-        'equal'     => 'okOk' // Custom rule, defined below
-    ),
-    'password' => array(
-        'required'  => true,
-        'minLength' => 4,
-        'maxLength' => 20,
-        'alpha'     => true,
-        'boolean'   => true,
-        'equal'  => 'Paroli' // We can use our custom rule on all fields
-    ),
-    'email' => array (
-        'required' => true,
-        'email'    => true
-    )
+$rules = array (
+    'name' => 'required|min:3|max:15|equal:Awesome:[s]',
+    'password' => 'required|min:3',
+    'email' => 'required|email',
+    'checkbox' => 'bool'
 );
 
 // Your error messages on your language
-$messages = array(
-    'name' => array(
+$messages = array (
+    'name' => array (
         'required' => 'Поле обязательно для заполнения',
-        'minLength' => 'Минимально !:value []%#^$&@#~!@#$%^&*( допустимоооооо :value символов',
-        'equal' => 'Not equils for :value',
-        'maxLength' => 'Максимально допустимо :value символов',
+        'min' => 'Minimum required 3 characters',
+        'max' => 'Maximal zulässige fünfzehn Zeichen',
+        'equal' => 'Значение должно равняться - Boss'
     ),
-    'password' => array(
+    'password' => array (
         'required' => 'Поле обязательно для заполнения',
-        'maxLength' => 'Максимально допустимо :value символов',
-        'equal' => 'Пароль должен равняться этому значению - :value'
+        'min' => 'Minimalement acceptables 3 caractères'
+    ),
+    'checkbox' => array (
+        'bool' => 'Вы не выставили галочку!'
     )
 );
 
 require_once '../library/Validator.php';
 $validator = new Validatr\Validator();
 
-// Custom rule Function for your needs
-$validator->addRule('equal', function($ruleValue, $fieldValue) {
-    return ($ruleValue == $fieldValue) ? true : false;
-});
-
 $result = $validator->validate($_POST, $rules, $messages);
-
-//var_dump($result);
 
 echo "<pre>";
 print_r($result);
@@ -134,11 +122,8 @@ echo "</pre>";
 ```
 
 ### Set messages
-You can set the error's messages on your language, which will be shown for non-valid data.
 
-    Notice!
-        You can use ":value" placeholder for rule's value in your message.
-        If you need text ":value" in your message, use !:value to cancel (to escape) special purpose of this placeholder (see return messages).
+#### //Todo
 
 ### Return Values
 
@@ -150,7 +135,7 @@ or
 
 A BOOLEAN value of TRUE if the validation was successful.
 
-**Return values examples:**
+**Return values example:**
 
 The result may be (if all fields were sent empty):
 ```
@@ -159,18 +144,14 @@ Array
     [name] => Array
         (
             [required] => Поле обязательно для заполнения
-            [minLength] => Минимально :value []%#^$&@#~!@#$%^&*( допустимоооооо 4 символов
-            [alnum] => Allow only letters and digits
-            [equal] => Not equils for okOk
+            [min] => Minimum required 3 characters
+            [equal] => Значение должно равняться - Boss
         )
 
     [password] => Array
         (
             [required] => Поле обязательно для заполнения
-            [minLength] => Minimally allowable 4 characters
-            [alpha] => Allow only letters
-            [boolean] => Entered value of this field must be boolean - 1 or 0
-            [equal] => Пароль должен равняться этому значению - Paroli
+            [min] => Minimalement acceptables 3 caractères
         )
 
     [email] => Array
@@ -179,10 +160,15 @@ Array
             [email] => Invalid email address
         )
 
+    [checkbox] => Array
+        (
+            [bool] => Вы не выставили галочку!
+        )
+
 )
 ```
 
-Or if all fields was checked successfully:
+Or if all fields was validated successfully:
 
 ```php
 1
@@ -191,57 +177,28 @@ Or if all fields was checked successfully:
 ### Available rules:
 
 ```
-- requred       //Checks if field's value is not empty
-- minLength     //Checks if the number of characters of field's value not less than rule value (UTF-8)
-- maxLength     //Checks if the number of characters of field's value not greater than rule value (UTF-8)
-- email         //Checks if field's value is a valid email adress
-- numeric       //Checks if field contains only numeric value
-- boolean       //Checks if field's value is boolean
-- alpha         //Checks if field's value contains only alphabetic characters (UTF-8)
-- alnum         //Checks if field's value contains only alphabetic and numeric characters (UTF-8)
+- requred   //Checks if field's value is not empty
+- min       //Checks if the number of characters of field's value not less than rule value (UTF-8)
+- max       //Checks if the number of characters of field's value not greater than rule value (UTF-8)
+- email     //Checks if field's value is a valid email adress
+- numeric   //Checks if field contains only numeric value
+- bool      //Checks if field's value is boolean
+- alpha     //Checks if field's value contains only alphabetic characters (UTF-8)
+- alnum     //Checks if field's value contains only alphabetic and numeric characters (UTF-8)
+- alnumWith //Checks if field's value contains only alphabetic and numeric characters (UTF-8) and some else characters
+- in        // Checks if value is included in the given list of values.
+- notIn     // Checks if value is not included in the given list of values.
+- equal     // checks if value is equal to rule value (Strict or not)
+- notEqual  // checks if value is bot equal to rule value (Strict or not)
 ```
 
 ### Creating your own validating rules
 
-```php
-$data = array (
-    'name' => 'ok'
-);
-
-$rules = array(
-    'name' => array(
-        'between' => '5,10' // Custom rule, defined below
-    )
-);
-
-$messages = array(
-    'name' => array(
-        'between' => 'The length of the value must be between :value'
-    )
-);
-
-// Custom rule Callback Function for your needs
-
-//First arg - your value from $rules array - '5,10'
-//Second arg - field's value, which comes as first arg in validate() method - 'ok'
-
-$validator->addRule('between', function($ruleValue, $fieldValue) {
-
-    $arr = explode(',', $ruleValue);
-    $lenghtFieldValue = mb_strlen($fieldValue, 'UTF-8');
-
-    if (($lenghtFieldValue > $arr[0]) && ($lenghtFieldValue < $arr[1])) {
-        return true;
-    }
-    return false;
-});
-
-$result = $validator->validate($data, $rules, $messages);
-```
+#### //Todo
 
 ## Contributing
 
-###//TODO
+#### //Todo
 
 ## Versioning
 
@@ -276,6 +233,7 @@ Inspired by:
 - http://jqueryvalidation.org/
 - https://github.com/selahattinunlu/phpValidator
 - https://github.com/Wixel/GUMP
+- http://laravel.com/docs/validation
 
 ## Copyright and License
 
