@@ -6,7 +6,7 @@ class Validator
 {
     private $_messages;
     private $rulesArray;
-    private $specialRulesArray;
+    private $customRuleFunctionsArray;
     public $messages = array();
     private $defaultMessages = array(
         'required' => 'This field is required',
@@ -25,18 +25,53 @@ class Validator
     );
     public $errors = array();
 
+    /**
+     * @param array $data Any data in format key => value
+     * @example
+     * array (
+     *    'name' => 'ok'
+     *    'password' => 'ok'
+     *    'email' => 'ok@gmail.com'
+     *    'checkbox' => '1'
+     * );
+     * @param array $rules Special array with your rules and values
+     * Each rule (with value) must be divided by "|".
+     * Each rule and value must be divided by ":".
+     * Additional parameters for rules must be divided by ":".
+     * @example
+     * array (
+     *    'name' => 'required|min:3|max:15|equal:Boss:[s]',
+     *    'password' => 'required|min:3',
+     *    'email' => 'required|email',
+     *    'checkbox' => 'bool'
+     * );
+     * @param array $messages Your error messages on your language for values, which is not valid
+     * @example
+     * array (
+     *     'name' => array (
+     *         'min' => 'Minimum required 3 characters',
+     *         'equal' => 'Значение должно равняться - Boss'
+     *     ),
+     *     'password' => array (
+     *         'required' => 'Поле обязательно для заполнения',
+     *         'min' => 'Minimalement acceptables 3 caractères'
+     *     )
+     * );
+     * @return array|bool An array with error messages or true if all data is valid
+     */
     public function validate(array $data, array $rules, $messages = array())
     {
         $this->_messages = $messages;
 
         foreach($rules as $ruleKey => $rulesListForField)
         {
+            // Skip, if not field for validation
             if (!array_key_exists($ruleKey, $data)) {
                 continue;
             }
 
-            $dataKey = $ruleKey; // Field's Name
-            $dataValue = $data[$ruleKey]; // Field's Value
+            $dataKey = $ruleKey; // Field Name
+            $dataValue = $data[$ruleKey]; // Field Value
 
             $rulesListForField = trim($rulesListForField);
             $rulesArray = explode('|', $rulesListForField);
@@ -45,10 +80,42 @@ class Validator
             {
                 $ruleParts = explode(':', $rule);
                 $ruleName = $ruleParts[0];
-                $ruleFunction = 'is'.$ruleName;
+                $ruleMethod = 'is'.$ruleName;
 
-                if (!isset($ruleParts[1])) {
-                    $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
+                if (method_exists($this, $ruleMethod)) {
+                    if (!isset($ruleParts[1])) {
+                        $result = $this->$ruleMethod($dataValue);
+                    } else {
+                        $ruleMethodParams = $ruleParts[1];
+
+                        // for strict mode comparison
+                        if (isset($ruleParts[2]) && (strtolower($ruleParts[2]) == '[strict]' || strtolower($ruleParts[2]) == '[s]')) {
+                            $result = $this->$ruleMethod($dataValue, $ruleMethodParams, true);
+                        } else {
+                            $result = $this->$ruleMethod($dataValue, $ruleMethodParams);
+                        }
+                    }
+                } elseif ( // For custom rule functions added with addRule() method
+                    isset($this->customRuleFunctionsArray[$ruleName]) && is_callable($this->customRuleFunctionsArray[$ruleName])
+                ) {
+                    $count = count($ruleParts);
+                    if ($count == 1) {
+                        $result = $this->customRuleFunctionsArray[$ruleName]($dataValue);
+                    } elseif ($count == 2) {
+                        $ruleMethodParams = $ruleParts[1];
+                        $result = $this->customRuleFunctionsArray[$ruleName]($dataValue, $ruleMethodParams);
+                    } else {
+                        $ruleMethodParams = $ruleParts[1];
+                        // Creating an array with rule parameters, which more than 2
+                        $params = array_slice($ruleParts, 2);
+                        $result = $this->customRuleFunctionsArray[$ruleName]($dataValue, $ruleMethodParams, $params);
+                    }
+                } else {
+                    throw new \Exception("Rule method \"{$ruleName}\" doesn't exist.");
+                }
+
+                /*if (!isset($ruleParts[1])) {
+                    $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleMethod);
                     $result = $reflectionMethod->invokeArgs($this, array($dataValue));
                 } else {
                     $ruleFunctionParams = $ruleParts[1];
@@ -57,13 +124,13 @@ class Validator
                     if (isset($ruleParts[2]) && (strtolower($ruleParts[2]) == '[strict]' || strtolower($ruleParts[2]) == '[s]')) {
                         $strict = true;
 
-                        $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
+                        $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleMethod);
                         $result = $reflectionMethod->invokeArgs($this, array($dataValue, $ruleFunctionParams, $strict));
                     } else {
-                        $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleFunction);
+                        $reflectionMethod = new \ReflectionMethod(__CLASS__, $ruleMethod);
                         $result = $reflectionMethod->invokeArgs($this, array($dataValue, $ruleFunctionParams));
                     }
-                }
+                }*/
 
                 $this->checkError($result, $dataKey, $ruleName);
             }
@@ -73,7 +140,7 @@ class Validator
 
     /**
      * Method for setting messages in array
-     * @param bool $result Result of rule function
+     * @param bool $result Result of rule function - true or false
      * @param string $dataKey Name of field
      * @param string $ruleName Name of rule function
      */
@@ -82,10 +149,18 @@ class Validator
         if (!$result) {
             if (isset($this->_messages[$dataKey][$ruleName])) {
                 $this->messages[$dataKey][$ruleName] = $this->_messages[$dataKey][$ruleName];
-            } else {
+            } elseif (isset($this->defaultMessages[$ruleName])) {
                 $this->messages[$dataKey][$ruleName] = $this->defaultMessages[$ruleName];
+            } else {
+                throw new \Exception("Message for custom rule method \"{$ruleName}\" doesn't set");
             }
         }
+    }
+
+    public function addRule($ruleName, \Closure $callbackFunction)
+    {
+        $ruleName = (string) $ruleName;
+        $this->customRuleFunctionsArray[$ruleName] = $callbackFunction;
     }
 
     public function isRequired($dataValue)
@@ -159,7 +234,7 @@ class Validator
     }
 
     /**
-     * Checks if value contains alpha, numeric and some else characters
+     * Checks if value contains alpha, numeric and some else custom characters
      * @param string $dataValue
      * @param string $ruleValue
      * @return bool
