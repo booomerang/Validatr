@@ -89,7 +89,7 @@ Form Handler with Validatr class
 // Set rules for some fields in form
 $rules = array (
     'name' => 'required|min:3|max:15|equal:Awesome:[s]',
-    'password' => 'required|min:3',
+    'password' => 'required|min:3|custom_equal:OK', // Custom rule, defined below
     'email' => 'required|email',
     'checkbox' => 'bool'
 );
@@ -100,11 +100,12 @@ $messages = array (
         'required' => 'Поле обязательно для заполнения',
         'min' => 'Minimum required 3 characters',
         'max' => 'Maximal zulässige fünfzehn Zeichen',
-        'equal' => 'Значение должно равняться - Boss'
+        'equal' => 'Значение должно равняться - Awesome'
     ),
     'password' => array (
         'required' => 'Поле обязательно для заполнения',
-        'min' => 'Minimalement acceptables 3 caractères'
+        'min' => 'Minimalement acceptables 3 caractères',
+        'custom_equal' => 'Кастомное сообщение для правила custom_equal'
     ),
     'checkbox' => array (
         'bool' => 'Вы не выставили галочку!'
@@ -113,6 +114,11 @@ $messages = array (
 
 require_once '../library/Validator.php';
 $validator = new Validatr\Validator();
+
+// Adding custom rule
+$validator->addRule('custom_equal', function($dataValue, $ruleValue){
+    return ($dataValue == $ruleValue) ? true : false;
+});
 
 $result = $validator->validate($_POST, $rules, $messages);
 
@@ -129,7 +135,7 @@ echo "</pre>";
 
 Method `validate()` returns one of two types:
 
-AN ARRAY containing in keys names of form fields and in values nested associative array containing in keys validation rules and in values error messages. (See below exampe).
+AN ARRAY containing in keys names of form fields and in values nested associative array containing in keys validation rules and in values error messages. (See below example).
 
 or
 
@@ -177,15 +183,15 @@ Or if all fields was validated successfully:
 ### Available rules:
 
 ```
-- requred   //Checks if field's value is not empty
-- min       //Checks if the number of characters of field's value not less than rule value (UTF-8)
-- max       //Checks if the number of characters of field's value not greater than rule value (UTF-8)
-- email     //Checks if field's value is a valid email adress
-- numeric   //Checks if field contains only numeric value
-- bool      //Checks if field's value is boolean
-- alpha     //Checks if field's value contains only alphabetic characters (UTF-8)
-- alnum     //Checks if field's value contains only alphabetic and numeric characters (UTF-8)
-- alnumWith //Checks if field's value contains only alphabetic and numeric characters (UTF-8) and some else characters
+- required  // Checks if field's value is not empty
+- min       // Checks if the number of characters of field's value not less than rule value (UTF-8)
+- max       // Checks if the number of characters of field's value not greater than rule value (UTF-8)
+- email     // Checks if field's value is a valid email adress
+- numeric   // Checks if field contains only numeric value
+- bool      // Checks if field's value is boolean
+- alpha     // Checks if field's value contains only alphabetic characters (UTF-8)
+- alnum     // Checks if field's value contains only alphabetic and numeric characters (UTF-8)
+- alnumWith // Checks if field's value contains only alphabetic and numeric characters (UTF-8) and some else custom characters
 - in        // Checks if value is included in the given list of values.
 - notIn     // Checks if value is not included in the given list of values.
 - equal     // checks if value is equal to rule value (Strict or not)
@@ -194,7 +200,38 @@ Or if all fields was validated successfully:
 
 ### Creating your own validating rules
 
-#### //Todo
+For creating your own validating rules use addRule method.
+
+```php
+// Lets create our own 'equal' rule.
+
+$data = array (
+    'name' => 'ok'
+);
+
+$rules = array(
+    'name' => 'custom_equal:OK:strict:upper'
+);
+
+$messages = array(
+    'name' => array(
+        'custom_equal' => 'The value must be equal "ok"'
+    )
+);
+
+// The callback function may receives three arguments:
+// 1st arg - field value - 'ok' (From $data)
+// 2nd arg - rule value - 'OK' (From $rules 2nd param)
+// 3rd arg - additional params - array (From $rules starting 3nd and more params)
+
+// $params in this example is an array - array('strict', 'upper'); But not used
+// It should return a boolean value indicating whether the value is valid.
+$validator->addRule('custom_equal', function($dataValue, $ruleValue, $params){
+    return ($dataValue == $ruleValue) ? true : false;
+});
+
+$result = $validator->validate($data, $rules, $messages);
+```
 
 ## Contributing
 
