@@ -165,14 +165,17 @@ class Validator
         $this->customRuleFunctionsArray[$ruleName] = $callbackFunction;
     }
 
-    public function isRequired($dataValue)
+    public function isRequired($input)
     {
-        if ($dataValue == '') {
+        if (is_null($input)) {
+            return false;
+        } elseif (is_string($input) && trim($input) === '') {
+            return false;
+        } elseif ((is_array($input) || $input instanceof \Countable) && count($input) < 1) {
             return false;
         }
-        else {
-            return true;
-        }
+
+        return true;
     }
 
     public function isMin($dataValue, $ruleValue)
