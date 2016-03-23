@@ -81,7 +81,7 @@ class Validator
             {
                 $ruleParts = explode(':', $rule);
                 $ruleName = $ruleParts[0];
-                $ruleMethod = 'is'.$ruleName;
+                $ruleMethod = 'validate'.$ruleName;
 
                 if (method_exists($this, $ruleMethod)) {
                     if (!isset($ruleParts[1])) {
@@ -165,7 +165,7 @@ class Validator
         $this->customRuleFunctionsArray[$ruleName] = $callbackFunction;
     }
 
-    public function isRequired($input)
+    public function validateRequired($input)
     {
         if (is_null($input)) {
             return false;
@@ -178,7 +178,7 @@ class Validator
         return true;
     }
 
-    public function isMin($dataValue, $ruleValue)
+    public function validateMin($dataValue, $ruleValue)
     {
         $dataValue = mb_strlen($dataValue, 'UTF-8');
         if ((int) $dataValue < (int) $ruleValue) {
@@ -188,7 +188,7 @@ class Validator
         }
     }
 
-    public function isMax($dataValue, $ruleValue)
+    public function validateMax($dataValue, $ruleValue)
     {
         $dataValue = mb_strlen($dataValue, 'UTF-8');
         if ((int) $dataValue > (int) $ruleValue) {
@@ -198,12 +198,12 @@ class Validator
         }
     }
 
-    public function isEmail($dataValue)
+    public function validateEmail($dataValue)
     {
         return filter_var($dataValue, FILTER_VALIDATE_EMAIL);
     }
 
-    public function isNumeric($dataValue)
+    public function validateNumeric($dataValue)
     {
         return is_numeric($dataValue);
     }
@@ -213,12 +213,12 @@ class Validator
      * @param mixed $dataValue Value for validating
      * @return bool
      */
-    public function isBool($dataValue)
+    public function validateBool($dataValue)
     {
         return filter_var($dataValue, FILTER_VALIDATE_BOOLEAN);
     }
 
-    public function isAlpha($dataValue)
+    public function validateAlpha($dataValue)
     {
         preg_match('/^[[:alpha:]]+$/iu', $dataValue, $result);
         if (!empty($result)) {
@@ -228,7 +228,7 @@ class Validator
         }
     }
 
-    public function isAlnum($dataValue)
+    public function validateAlnum($dataValue)
     {
         preg_match('/^[[:alnum:]]+$/iu', $dataValue, $result);
         if (!empty($result)) {
@@ -244,7 +244,7 @@ class Validator
      * @param string $ruleValue
      * @return bool
      */
-    public function isAlnumWith($dataValue, $ruleValue)
+    public function validateAlnumWith($dataValue, $ruleValue)
     {
         preg_match('/^[[:alnum:]'.preg_quote($ruleValue, '/').']+$/iu', $dataValue, $result);
         if (!empty($result)) {
@@ -261,7 +261,7 @@ class Validator
      * @param bool $strict Mode for strict comparison
      * @return bool
      */
-    public function isIn($dataValue, $ruleValue, $strict = false)
+    public function validateIn($dataValue, $ruleValue, $strict = false)
     {
         $valuesArray = explode(',', $ruleValue);
         $valuesArray = array_map('trim', $valuesArray);
@@ -289,7 +289,7 @@ class Validator
      * @param bool $strict Mode for strict comparison
      * @return bool
      */
-    public function isNotIn($dataValue, $ruleValue, $strict = false)
+    public function validateNotIn($dataValue, $ruleValue, $strict = false)
     {
         $valuesArray = explode(',', $ruleValue);
         $valuesArray = array_map('trim', $valuesArray);
@@ -310,7 +310,7 @@ class Validator
         return true;
     }
 
-    public function isEqual($dataValue, $ruleValue, $strict = false)
+    public function validateEqual($dataValue, $ruleValue, $strict = false)
     {
         if ($strict == false) {
             $dataValue = mb_strtolower($dataValue, 'UTF-8');
@@ -323,7 +323,7 @@ class Validator
         }
     }
 
-    public function isNotEqual($dataValue, $ruleValue, $strict = false)
+    public function validateNotEqual($dataValue, $ruleValue, $strict = false)
     {
         if ($strict == false) {
             $dataValue = mb_strtolower($dataValue, 'UTF-8');
