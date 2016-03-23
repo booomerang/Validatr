@@ -27,6 +27,13 @@ class Validator
 
     /**
      * @param array $data Any data in format key => value
+     * @param array $rules Special array with your rules and values
+     * Each rule (with value) must be divided by "|".
+     * Each rule and value must be divided by ":".
+     * Additional parameters for rules must be divided by ":".
+     * @param array $messages Your error messages on your language for values, which is not valid
+     * @return array|bool An array with error messages or true if all data is valid
+     * @throws \Exception
      * @example
      * array (
      *    'name' => 'ok'
@@ -34,10 +41,6 @@ class Validator
      *    'email' => 'ok@gmail.com'
      *    'checkbox' => '1'
      * );
-     * @param array $rules Special array with your rules and values
-     * Each rule (with value) must be divided by "|".
-     * Each rule and value must be divided by ":".
-     * Additional parameters for rules must be divided by ":".
      * @example
      * array (
      *    'name' => 'required|min:3|max:15|equal:Boss:[s]',
@@ -45,7 +48,6 @@ class Validator
      *    'email' => 'required|email',
      *    'checkbox' => 'bool'
      * );
-     * @param array $messages Your error messages on your language for values, which is not valid
      * @example
      * array (
      *     'name' => array (
@@ -57,7 +59,6 @@ class Validator
      *         'min' => 'Minimalement acceptables 3 caractères'
      *     )
      * );
-     * @return array|bool An array with error messages or true if all data is valid
      */
     public function validate(array $data, array $rules, $messages = array())
     {
@@ -143,6 +144,7 @@ class Validator
      * @param bool $result Result of rule function - true or false
      * @param string $dataKey Name of field
      * @param string $ruleName Name of rule function
+     * @throws \Exception
      */
     private function checkError($result, $dataKey, $ruleName)
     {
