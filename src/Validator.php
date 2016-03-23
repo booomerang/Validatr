@@ -178,24 +178,29 @@ class Validator
         return true;
     }
 
-    public function validateMin($dataValue, $ruleValue)
+    public function validateMin($input, $sizeMin)
     {
-        $dataValue = mb_strlen($dataValue, 'UTF-8');
-        if ((int) $dataValue < (int) $ruleValue) {
-            return false;
-        } else {
-            return true;
-        }
+        $inputSize = $this->getSize($input);
+        return (is_numeric($sizeMin)) && ($inputSize >= $sizeMin);
     }
 
-    public function validateMax($dataValue, $ruleValue)
+    public function validateMax($input, $sizeMax)
     {
-        $dataValue = mb_strlen($dataValue, 'UTF-8');
-        if ((int) $dataValue > (int) $ruleValue) {
-            return false;
-        } else {
-            return true;
+        $inputSize = $this->getSize($input);
+        return (is_numeric($sizeMax)) && ($inputSize <= $sizeMax);
+    }
+
+    /**
+     * Get size of a given input value
+     * @param $input
+     * @return int
+     */
+    protected function getSize($input)
+    {
+        if (is_numeric($input)) {
+            return $input;
         }
+        return mb_strlen($input, 'UTF-8');
     }
 
     public function validateEmail($dataValue)
