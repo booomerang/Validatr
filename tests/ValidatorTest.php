@@ -118,7 +118,7 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
     public function testValidateNumeric()
     {
         $trueData = [
-            12, '12', 8.99, '7.57', '024'
+            12, '12', 8.99, -7.03, '7.57', '024'
         ];
 
         $falseData = [
@@ -151,6 +151,75 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
 
         foreach($falseData as $input) {
             $this->assertFalse($this->validator->validateBool($input), "Error occured when input number was '{$input}'");
+        }
+    }
+
+    public function testValidateAlpha()
+    {
+        $trueData = [
+            'okay', 'anotherString', 'true', 'false', 'null'
+        ];
+
+        $falseData = [
+            null, false, '123', 123, 'okay2', '2okay', '01bada02', '^*%YGUT&^$^63', '!@#$%^&*()_+'
+        ];
+
+        foreach($trueData as $input) {
+            $this->assertTrue($this->validator->validateAlpha($input), "Error occured when input number was '{$input}'");
+        }
+
+        foreach($falseData as $input) {
+            $this->assertFalse($this->validator->validateAlpha($input), "Error occured when input number was '{$input}'");
+        }
+    }
+
+    public function testValidateAlnum()
+    {
+        $trueData = [
+            'okay', 'anotherString', 'true', 0, 12, 'false', 'null', 'stringWith123', '123WithString',
+        ];
+
+        $falseData = [
+            false, null, '^*%YGUT&^$^63', '!@#$%^&*()_+', 'stringWith space', 'stringWith123With-+', '1 +12'
+        ];
+
+        foreach($trueData as $input) {
+            $this->assertTrue($this->validator->validateAlnum($input), "Error occured when input number was '{$input}'");
+        }
+
+        foreach($falseData as $input) {
+            $this->assertFalse($this->validator->validateAlnum($input), "Error occured when input number was '{$input}'");
+        }
+    }
+
+    public function testValidateAlnumWith()
+    {
+        $trueData = [
+            ['oka', '12'],
+            ['ok234', 9],
+            ['234ok', 'oka'],
+            [125, 'k'],
+            [125, 123],
+            ['ok=daHorosho', '='],
+            ['ok=da_Horosho-ugu', '=_-'],
+            ['some_string+numbers-$%^', '=_-!@#$%^&+'],
+            ['%m,ok.word%&^', '&^.,/6367%^#'],
+        ];
+
+        $falseData = [
+            ['ok-', 9],
+            ['ok+_)', '_'],
+            ['ok=daHorosho3.2', '='],
+            ['ok=+-daHorosho', ''],
+            ['ok=+-daHorosho12', '12'],
+        ];
+
+        foreach($trueData as $input) {
+            $this->assertTrue($this->validator->validateAlnumWith($input[0], $input[1]), "Error occured when input number was '{$input[0]}'");
+        }
+
+        foreach($falseData as $input) {
+            $this->assertFalse($this->validator->validateAlnumWith($input[0], $input[1]), "Error occured when input number was '{$input[0]}'");
         }
     }
 }
