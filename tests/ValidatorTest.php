@@ -114,4 +114,43 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->validator->validateEmail($trueEmail));
         $this->assertFalse($this->validator->validateEmail($wrongEmail));
     }
+
+    public function testValidateNumeric()
+    {
+        $trueData = [
+            12, '12', 8.99, '7.57', '024'
+        ];
+
+        $falseData = [
+            'okay', 'superb', '22b', 'l12', '2,3', '02O'
+        ];
+
+
+        foreach($trueData as $number) {
+            $this->assertTrue($this->validator->validateNumeric($number), "Error occured when input number was '{$number}'");
+        }
+
+        foreach($falseData as $number) {
+            $this->assertFalse($this->validator->validateNumeric($number), "Error occured when input number was '{$number}'");
+        }
+    }
+
+    public function testValidateBool()
+    {
+        $trueData = [
+            1, true, 'true', 'on', 'yes'
+        ];
+
+        $falseData = [
+            'okay', '12', false, 0, 0.2, 'ok', '22b', 'l12', '2,3', '2.3', '02O'
+        ];
+
+        foreach($trueData as $input) {
+            $this->assertTrue($this->validator->validateBool($input), "Error occured when input number was '{$input}'");
+        }
+
+        foreach($falseData as $input) {
+            $this->assertFalse($this->validator->validateBool($input), "Error occured when input number was '{$input}'");
+        }
+    }
 }
