@@ -262,20 +262,20 @@ class Validator
 
     /**
      * Checks if value is included in the given list of values.
-     * @param mixed $dataValue Field value
-     * @param mixed $ruleValue List of values with comma as delimiter
+     * @param mixed $input Field value
+     * @param string $valuesList List of values with comma as delimiter
      * @param bool $strict Mode for strict comparison
      * @return bool
      */
-    public function validateIn($dataValue, $ruleValue, $strict = false)
+    public function validateIn($input, $valuesList, $strict = false)
     {
-        $valuesArray = explode(',', $ruleValue);
+        $valuesArray = explode(',', $valuesList);
         $valuesArray = array_map('trim', $valuesArray);
 
         if ($strict == false) {
             foreach($valuesArray as $value)
             {
-                $dataValue = mb_strtolower($dataValue, 'UTF-8');
+                $dataValue = mb_strtolower($input, 'UTF-8');
                 $value = mb_strtolower($value, 'UTF-8');
 
                 if ($value == $dataValue) {
@@ -283,62 +283,34 @@ class Validator
                 }
             }
         } else {
-            return in_array($dataValue, $valuesArray);
+            return in_array($input, $valuesArray);
         }
         return false;
     }
 
     /**
      * Checks if value is not included in the given list of values.
-     * @param mixed $dataValue Field value
-     * @param mixed $ruleValue List of values with comma as delimiter
+     * @param mixed $input Field value
+     * @param string $valuesList List of values with comma as delimiter
      * @param bool $strict Mode for strict comparison
      * @return bool
      */
-    public function validateNotIn($dataValue, $ruleValue, $strict = false)
+    public function validateNotIn($input, $valuesList, $strict = false)
     {
-        $valuesArray = explode(',', $ruleValue);
-        $valuesArray = array_map('trim', $valuesArray);
-
-        if ($strict == false) {
-            foreach($valuesArray as $value)
-            {
-                $dataValue = mb_strtolower($dataValue, 'UTF-8');
-                $value = mb_strtolower($value, 'UTF-8');
-
-                if ($value == $dataValue) {
-                    return false;
-                }
-            }
-        } else {
-            return !in_array($dataValue, $valuesArray);
-        }
-        return true;
+        return ! $this->validateIn($input, $valuesList, $strict);
     }
 
-    public function validateEqual($dataValue, $ruleValue, $strict = false)
+    public function validateEqual($input, $comparingValue, $strict = false)
     {
         if ($strict == false) {
-            $dataValue = mb_strtolower($dataValue, 'UTF-8');
-            $ruleValue = mb_strtolower($ruleValue, 'UTF-8');
+            $input = mb_strtolower($input, 'UTF-8');
+            $comparingValue = mb_strtolower($comparingValue, 'UTF-8');
         }
-        if ($dataValue == $ruleValue) {
-            return true;
-        } else {
-            return false;
-        }
+        return ($input === $comparingValue) ? true : false;
     }
 
-    public function validateNotEqual($dataValue, $ruleValue, $strict = false)
+    public function validateNotEqual($input, $comparingValue, $strict = false)
     {
-        if ($strict == false) {
-            $dataValue = mb_strtolower($dataValue, 'UTF-8');
-            $ruleValue = mb_strtolower($ruleValue, 'UTF-8');
-        }
-        if ($dataValue != $ruleValue) {
-            return true;
-        } else {
-            return false;
-        }
+        return ! $this->validateEqual($input, $comparingValue, $strict);
     }
 }
