@@ -213,55 +213,51 @@ class Validator
         return filter_var($input, FILTER_VALIDATE_EMAIL) === false ? false: true;
     }
 
-    public function validateNumeric($dataValue)
+    public function validateNumeric($input)
     {
-        return is_numeric($dataValue);
+        return is_numeric($input);
     }
 
     /**
      * Method returns TRUE for values "1", "true", "on" and "yes". Otherwise returns FALSE.
-     * @param mixed $dataValue Value for validating
+     * @param $input
      * @return bool
      */
-    public function validateBool($dataValue)
+    public function validateBool($input)
     {
-        return filter_var($dataValue, FILTER_VALIDATE_BOOLEAN);
+        return filter_var($input, FILTER_VALIDATE_BOOLEAN);
     }
 
-    public function validateAlpha($dataValue)
+    /**
+     * The input value under validation must be entirely alphabetic characters.
+     * @param $input
+     * @return bool
+     */
+    public function validateAlpha($input)
     {
-        preg_match('/^[[:alpha:]]+$/iu', $dataValue, $result);
-        if (!empty($result)) {
-            return true;
-        } else {
-            return false;
-        }
+        preg_match('/^[[:alpha:]]+$/iu', $input, $result);
+        return (is_string($input) && !empty($result)) ? true : false;
     }
 
-    public function validateAlnum($dataValue)
+    public function validateAlnum($input)
     {
-        preg_match('/^[[:alnum:]]+$/iu', $dataValue, $result);
-        if (!empty($result)) {
-            return true;
-        } else {
+        if (! is_string($input) && ! is_numeric($input)) {
             return false;
         }
+        preg_match('/^[[:alnum:]]+$/iu', $input, $result);
+        return !empty($result) ? true : false;
     }
 
     /**
      * Checks if value contains alpha, numeric and some else custom characters
-     * @param string $dataValue
-     * @param string $ruleValue
+     * @param $input
+     * @param string $additionalSymbolsList
      * @return bool
      */
-    public function validateAlnumWith($dataValue, $ruleValue)
+    public function validateAlnumWith($input, $additionalSymbolsList)
     {
-        preg_match('/^[[:alnum:]'.preg_quote($ruleValue, '/').']+$/iu', $dataValue, $result);
-        if (!empty($result)) {
-            return true;
-        } else {
-            return false;
-        }
+        preg_match('/^[[:alnum:]'.preg_quote($additionalSymbolsList, '/').']+$/iu', $input, $result);
+        return !empty($result) ? true : false;
     }
 
     /**
