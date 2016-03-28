@@ -222,4 +222,28 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
             $this->assertFalse($this->validator->validateAlnumWith($input[0], $input[1]), "Error occured when input number was '{$input[0]}'");
         }
     }
+
+    public function testValidateIn()
+    {
+        $this->assertTrue($this->validator->validateIn('two', 'one, two, three'));
+        $this->assertFalse($this->validator->validateIn('four', 'one, two, three'));
+    }
+
+    public function testValidateNotIn()
+    {
+        $this->assertTrue($this->validator->validateNotIn('four', 'one, two, three'));
+        $this->assertFalse($this->validator->validateNotIn('two', 'one, two, three'));
+    }
+
+    public function testValidateEqual()
+    {
+        $this->assertTrue($this->validator->validateEqual('one', 'one'));
+        $this->assertFalse($this->validator->validateEqual('one', 'two'));
+    }
+
+    public function testValidateNotEqual()
+    {
+        $this->assertTrue($this->validator->validateNotEqual('one', 'two'));
+        $this->assertFalse($this->validator->validateNotEqual('one', 'one'));
+    }
 }
