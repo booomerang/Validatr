@@ -200,8 +200,8 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
             ['234ok', 'oka'],
             [125, 'k'],
             [125, 123],
-            ['ok=daHorosho', '='],
-            ['ok=da_Horosho-ugu', '=_-'],
+            ['ok=unitTesting', '='],
+            ['ok=da_unitTesting-ugu', '=_-'],
             ['some_string+numbers-$%^', '=_-!@#$%^&+'],
             ['%m,ok.word%&^', '&^.,/6367%^#'],
         ];
@@ -209,9 +209,11 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase
         $falseData = [
             ['ok-', 9],
             ['ok+_)', '_'],
-            ['ok=daHorosho3.2', '='],
-            ['ok=+-daHorosho', ''],
-            ['ok=+-daHorosho12', '12'],
+            ['ok=unitTesting3.2', '='],
+            ['ok=+-unitTesting', ''],
+            ['ok=+-unitTesting12', '12'],
+            ['12312+-', 'abc'],
+            ['russian_symbols_окай', 'окай']
         ];
 
         foreach($trueData as $input) {
