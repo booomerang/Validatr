@@ -199,6 +199,8 @@ class Validator
     {
         if (is_numeric($input)) {
             return $input;
+        } elseif ((is_array($input) || $input instanceof \Countable)) {
+            return count($input);
         }
         return mb_strlen($input, 'UTF-8');
     }
