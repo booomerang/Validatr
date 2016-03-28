@@ -203,9 +203,14 @@ class Validator
         return mb_strlen($input, 'UTF-8');
     }
 
-    public function validateEmail($dataValue)
+    /**
+     * Validate email input
+     * @param $input
+     * @return bool
+     */
+    public function validateEmail($input)
     {
-        return filter_var($dataValue, FILTER_VALIDATE_EMAIL);
+        return filter_var($input, FILTER_VALIDATE_EMAIL) === false ? false: true;
     }
 
     public function validateNumeric($dataValue)
