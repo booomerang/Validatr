@@ -2,6 +2,8 @@
 
 ini_set('display_errors', 1);
 
+require __DIR__.'/../vendor/autoload.php';
+
 // Set rules for some fields in form
 $rules = array (
     'name' => 'required|min:3|max:15|equal:Boss:[s]',
@@ -28,7 +30,6 @@ $messages = array (
     )
 );
 
-require_once '../library/Validator.php';
 $validator = new Validatr\Validator();
 
 $validator->addRule('custom_equal', function($dataValue, $ruleValue){
