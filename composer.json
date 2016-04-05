@@ -1,6 +1,6 @@
 {
     "name": "boomerang/validatr",
-    "description": "Simple, multilingual, standalone PHP Validator library - Validatr.",
+    "description": "Simple, multilingual, standalone PHP Validator class - Validatr.",
     "keywords": ["validator", "validation", "validatr", "form validator", "php"],
     "homepage": "https://github.com/booomerang",
     "type": "library",
