@@ -1,17 +1,14 @@
-#Validatr 2.0
+#Validatr
 
-Validatr is a simple multilingual Php Validator library for checking user's data.
+[![Build Status](https://travis-ci.org/booomerang/Validatr.svg?branch=master)](https://travis-ci.org/booomerang/Validatr)
+
+Validatr is a simple multilingual PHP Validation library for checking user's data.
 
   - Simple form for rules and errors messages
-  - Flexible and extendable with your callbacks rules functions
+  - Flexible and extendable library with your callback rules
   - Enjoyment!
 
 Validatr is a standalone PHP class, which can be extended for your needs.
-
-What's new in 2.0 version?
-- More rules
-- More compact creating rules
-- More powerful and flexible
 
 ## Table of contents
 
@@ -25,7 +22,7 @@ What's new in 2.0 version?
 
 ## Getting started
 
-1. Php >= 5.3.0 is required
+1. PHP >= 5.4 is required
 2. Install Validatr convenient for you
 3. Check your data with Validatrs rules
 4. Enjoy!
@@ -37,7 +34,7 @@ What's new in 2.0 version?
 ```
 {
     "require": {
-        "boomerang/validatr": "dev-master"
+        "boomerang/validatr": "~3.0"
     }
 }
 ```
@@ -45,7 +42,11 @@ What's new in 2.0 version?
 To download the library run the command:
 
 ```
-$ php composer.phar update boomerang/validatr
+$ php composer.phar require boomerang/validatr
+```
+or
+```
+$ composer require boomerang/validatr
 ```
 
 2) Git clone
@@ -65,21 +66,18 @@ Unzip it and copy the directory into your PHP project directory.
 Simple Form
 
 ```html
-<form action="post.php" method="post">
-    <label for="name">Name</label>
-    <input type="text" name="name" id="name" /><br/>
+<form action="post.php" method="POST">
 
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" /><br/>
-
-    <label for="email">Email</label>
-    <input type="email" name="email" id="email" /><br/>
+    <input type="text" name="name" id="name" placeholder="Name" />
+    <input type="password" name="password" id="password" placeholder="Name" />
+    <input type="email" name="email" id="email" placeholder="Name" />
 
     <label for="checkbox">Checkbox</label>
     <input type="hidden" name="checkbox" value="0" />
     <input type="checkbox" name="checkbox" id="checkbox" value="1" /><br/>
 
     <input type="submit" />
+
 </form>
 ```
 
@@ -87,12 +85,12 @@ Form Handler with Validatr class
 
 ```php
 // Set rules for some fields in form
-$rules = array (
+$rules = [
     'name' => 'required|min:3|max:15|equal:Awesome:[s]',
     'password' => 'required|min:3|custom_equal:OK', // Custom rule, defined below
     'email' => 'required|email',
     'checkbox' => 'bool'
-);
+];
 
 // Your error messages on your language
 $messages = array (
@@ -112,8 +110,7 @@ $messages = array (
     )
 );
 
-require_once '../library/Validator.php';
-$validator = new Validatr\Validator();
+$validator = new \Validatr\Validator();
 
 // Adding custom rule
 $validator->addRule('custom_equal', function($dataValue, $ruleValue){
@@ -235,7 +232,14 @@ $result = $validator->validate($data, $rules, $messages);
 
 ## Contributing
 
-#### //Todo
+1. Fork it
+2. Create your feature branch (git checkout -b my-new-feature)
+3. Make your changes
+4. Write the unit tests for your new feature (phpunit)
+5. Commit your changes (git commit -am 'Add some feature')
+6. Push to the branch (git push origin my-new-feature)
+7. Create new Pull Request
+
 
 ## Versioning
 
@@ -259,9 +263,7 @@ Brazenly copied from [Bootstrap's README.md](https://github.com/twbs/bootstrap#v
 
 ## Authors
 
-Alex Duplii - Boomerang
-
-Email - dusanea@gmail.com
+Alex D.
 
 -----
 
@@ -271,7 +273,8 @@ Inspired by:
 - https://github.com/selahattinunlu/phpValidator
 - https://github.com/Wixel/GUMP
 - http://laravel.com/docs/validation
+- https://github.com/Respect/Validation
 
 ## Copyright and License
 
-Copyright 2014 Boomerang, Inc. under the MIT license.
+Copyright 2016 Alex D, licensed under the [MIT](http://opensource.org/licenses/MIT "Bootstrap versioning").
